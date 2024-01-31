@@ -33,10 +33,7 @@ public class TestAuthenticator implements Authenticator {
 
     public boolean checkSession(HttpSession s) {
         Object authStatus = s.getAttribute("auth");
-        if(authStatus != null && authStatus.equals(true)) {
-            return true;
-        }
-        return false;
+        return (authStatus != null && authStatus.equals(true));
     }
 
 }
