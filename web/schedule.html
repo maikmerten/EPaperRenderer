@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/styles.css">
+    <title>Schedule</title>
+    <script src="js/jsonHelper.js"></script>
+    <script src="js/imageFetch.js"></script>
+
+
+    <script>
+
+        let tags = {};
+        let schedule = {
+            "room": "Lehrsaal 5",
+            "date": "31.10.2025",
+            "entries": [
+                ["08:00-11:00", "Gruppenarbeit Betriebssysteme"],
+                ["16:00-17:00", "Vorbesprechung Hackathon"],
+                ["17:00-21:00", "Hackathon"],
+                ["21:00-23:00", "Halloween-Filmabend"],
+                ["23:00-23:15", "Räume durchkärchern"],
+                ["23:15-23:30", "Leute rauskärchern"],
+            ]
+        }
+
+        let envelope = {
+            "authtoken": "sesame",
+            "ap": "192.168.1.10",
+            "mac": "0000021E733A7430",
+            "width": 640,
+            "height": 384,
+            "schedule": schedule
+        }
+
+        function removeFromArray(array, idx) {
+            let result = [];
+            for (let i in array) {
+                if (i != idx) {
+                    result.push(array[i]);
+                }
+            }
+            return result;
+        }
+
+        function updateEditor() {
+            const roomInput = document.querySelector("#room");
+            const dateInput = document.querySelector("#date");
+
+            roomInput.value = schedule.room;
+            roomInput.addEventListener("change", () => {
+                schedule.room = roomInput.value;
+                updateEditor();
+            })
+
+            dateInput.value = schedule.date
+            dateInput.addEventListener("change", () => {
+                schedule.date = dateInput.value;
+                updateEditor();
+            })
+
+            let resOption = document.querySelector("#res-" + schedule.width + "x" + schedule.height);
+            if (resOption) {
+                resOption.selected = true;
+            }
+
+            const tbody = document.querySelector("#schedbody");
+            tbody.innerHTML = "";
+
+            for (let idx in schedule.entries) {
+                const entry = schedule.entries[idx];
+
+                let tr = document.createElement("tr");
+                tbody.append(tr);
+
+                let td = document.createElement("td");
+                tr.append(td);
+                let input = document.createElement("input");
+                td.append(input);
+                input.value = entry[0];
+                input.addEventListener("change", (e) => {
+                    entry[0] = e.srcElement.value;
+                    updateEditor();
+                })
+
+
+                td = document.createElement("td");
+                tr.append(td);
+                input = document.createElement("input");
+                td.append(input);
+                input.value = entry[1];
+                input.addEventListener("change", (e) => {
+                    entry[1] = e.srcElement.value;
+                    updateEditor();
+                })
+
+
+                td = document.createElement("td");
+                tr.append(td);
+                let btn = document.createElement("button");
+                td.append(btn);
+                btn.innerText = "X";
+                btn.addEventListener("click", () => {
+                    schedule.entries = removeFromArray(schedule.entries, idx);
+                    updateEditor();
+                })
+
+            }
+
+            render();
+        }
+
+        function updateEnvelope() {
+            let sel = document.querySelector("#selTags");
+            let mac = sel.value;
+            let info = tags[mac];
+            envelope.mac = mac;
+            envelope.width = info.width;
+            envelope.height = info.height;
+        }
+
+        function renderTagList() {
+            let sel = document.querySelector("#selTags");
+            sel.innerHTML = "";
+
+            for(let mac in tags) {
+                let info = tags[mac];
+                let option = document.createElement("option");
+                sel.append(option);
+                option.innerText = mac + ": " + info.description;
+                option.value = mac;
+            }
+
+            sel.addEventListener("change", render);
+        }
+
+        function render() {
+            updateEnvelope();
+            imageFetch.fetchImage("/api/render-schedule", envelope, "#preview-img");
+        }
+
+        async function upload() {
+            updateEnvelope();
+            await jsonHelper.uploadObjAsJson("/api/upload-schedule", envelope);
+        }
+
+        async function login() {
+            let credentials = {
+                "user": "test",
+                "password": "sesame"
+            }
+            await jsonHelper.uploadObjAsJson("/api/login", credentials);
+        }
+
+        async function init() {
+            await login();
+
+            tags = await jsonHelper.fetchJson("tags.json");
+            renderTagList();
+
+            updateEditor();
+
+            document.querySelector("#btnRender").addEventListener("click", () => {
+                render();
+            })
+
+            document.querySelector("#btnUpload").addEventListener("click", () => {
+                upload();
+            })
+
+            document.querySelector("#btnNew").addEventListener("click", () => {
+                schedule.entries.push(["", ""]);
+                updateEditor();
+            })
+        }
+
+        window.addEventListener("DOMContentLoaded", init);
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="table">
+        <div class="tr">
+            <div class="td right"><label for="room">Raum</label></div>
+            <div class="td right"><input id="room"></div>
+        </div>
+
+        <div class="tr">
+            <div class="td right"><label for="date">Datum</label></div>
+            <div class="td right"><input id="date"></div>
+        </div>
+    </div>
+
+    <br>
+
+    <table>
+        <tr>
+            <th>Zeit</th>
+            <th>Veranstaltung</th>
+            <th>Aktion</th>
+        </tr>
+        <tbody id="schedbody"></tbody>
+    </table>
+
+    <button id="btnNew">Neue Zeile</button>
+
+    <br><br>
+
+    <select id="selTags">
+    </select>
+    <button id="btnRender">Render</button>
+
+    <br><br>
+
+    <img id="preview-img" class="preview">
+
+    <br><br>
+    <input id="btnUpload" type="button" value="hochladen">
+</body>
+
+</html>

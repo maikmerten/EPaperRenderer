@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.table {
+    display: table;
+}
+
+.tr {
+    display: table-row;
+}
+
+.td {
+    display: table-cell;
+    padding: 3px;
+}
+
+.right {
+    text-align: right;
+}
+
+.preview {
+    border: 3px solid silver;
+}
