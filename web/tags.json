@@ -2,16 +2,26 @@
     "0000021E733A7430": {
         "width": 640,
         "height": 384,
-        "description": "Der Tag mit dem Knacks"
+        "description": "7.4\" (1)"
     },
     "0000021E8D837433": {
         "width": 640,
         "height": 384,
-        "description": "Noch ein Tag"
+        "description": "7.4\" (2)"
+    },
+    "0000021E8D857435": {
+        "width": 640,
+        "height": 384,
+        "description": "7.4\" (3)"
+    },
+    "0000021E8D6E7430": {
+        "width": 640,
+        "height": 384,
+        "description": "7.4\" (4)"
     },
     "FFFF424242424242": {
         "width": 296,
         "height": 128,
-        "description": "Ein kleiner Tag"
+        "description": "2.9\" (1)"
     }
 }
