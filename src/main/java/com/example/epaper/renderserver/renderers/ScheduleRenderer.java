@@ -7,8 +7,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import com.example.epaper.renderserver.model.Schedule;
-import com.example.epaper.renderserver.model.ScheduleEnvelope;
-
+import com.example.epaper.renderserver.tagdb.TagInfo;
 
 public class ScheduleRenderer {
 
@@ -17,11 +16,11 @@ public class ScheduleRenderer {
         private int xRoom, xDate, xTime, xDescr;
     }
    
-    private static RenderConfig configRenderer(ScheduleEnvelope env) {
+    private static RenderConfig configRenderer(TagInfo taginfo) {
         RenderConfig c = new RenderConfig();
 
-        c.width = env.getWidth() & 0x7FF;
-        c.height = env.getHeight() & 0x7FF;
+        c.width = taginfo.getWidth();
+        c.height = taginfo.getHeight();
 
         // default for 296x128
         c.fontSize = 12;
@@ -56,9 +55,8 @@ public class ScheduleRenderer {
         return c;
     }
 
-    public static BufferedImage renderSchedule(ScheduleEnvelope env) {
-        RenderConfig c = configRenderer(env);
-        Schedule sched = env.getSchedule();
+    public static BufferedImage renderSchedule(Schedule sched, TagInfo taginfo) {
+        RenderConfig c = configRenderer(taginfo);
 
         Font boldFont = new Font("Arial", Font.BOLD, c.fontSize);
         Font plainFont = new Font("Arial", Font.PLAIN, c.fontSize);

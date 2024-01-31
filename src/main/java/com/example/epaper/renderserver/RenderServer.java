@@ -12,6 +12,8 @@ import com.example.epaper.renderserver.auth.TestAuthenticator;
 import com.example.epaper.renderserver.model.Credentials;
 import com.example.epaper.renderserver.model.ScheduleEnvelope;
 import com.example.epaper.renderserver.renderers.ScheduleRenderer;
+import com.example.epaper.renderserver.tagdb.TagDb;
+import com.example.epaper.renderserver.tagdb.TagInfo;
 import com.example.epaper.upload.Uploader;
 import com.example.epaper.util.ImageConverter;
 
@@ -29,6 +31,7 @@ public class RenderServer {
     public static void main(String[] args) {
         Miniserv server = new Miniserv(8000, true);
         Authenticator auth = new TestAuthenticator();
+        TagDb tagDb = new TagDb();
 
         AuthChecker authChecker = (HttpSession session) -> {
             return auth.checkSession(session);
@@ -40,15 +43,21 @@ public class RenderServer {
             return "ok";
         });
 
+        server.onGet("/api/tags", (request) -> {
+            return tagDb.getTagMap();
+        }, authChecker);
+
         server.onPost("/api/render-schedule", (request) -> {
             ScheduleEnvelope env = server.jsonToObject(request, ScheduleEnvelope.class);
-            BufferedImage bimg = ScheduleRenderer.renderSchedule(env);
+            TagInfo taginfo = tagDb.getTagInfo(env.getMac());
+            BufferedImage bimg = ScheduleRenderer.renderSchedule(env.getSchedule(), taginfo);
             return imageResponse(bimg);
         }, authChecker);
 
         server.onPost("/api/upload-schedule", (request) -> {
             ScheduleEnvelope env = server.jsonToObject(request, ScheduleEnvelope.class);
-            BufferedImage bimg = ScheduleRenderer.renderSchedule(env);
+            TagInfo taginfo = tagDb.getTagInfo(env.getMac());
+            BufferedImage bimg = ScheduleRenderer.renderSchedule(env.getSchedule(), taginfo);
 
             Uploader up = new Uploader(env.getAp());
             up.uploadImage(bimg, env.getMac(), false);

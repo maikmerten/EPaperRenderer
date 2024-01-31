@@ -27,11 +27,8 @@
         }
 
         let envelope = {
-            "authtoken": "sesame",
             "ap": "192.168.1.10",
             "mac": "0000021E733A7430",
-            "width": 640,
-            "height": 384,
             "schedule": schedule
         }
 
@@ -157,7 +154,7 @@
         async function init() {
             await login();
 
-            tags = await jsonHelper.fetchJson("tags.json");
+            tags = await jsonHelper.fetchJson("/api/tags");
             renderTagList();
 
             updateEditor();

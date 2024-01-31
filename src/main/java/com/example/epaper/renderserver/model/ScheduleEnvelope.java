@@ -4,8 +4,6 @@ public class ScheduleEnvelope {
 
     private String ap;
     private String mac;
-    private int width;
-    private int height;
     private Schedule schedule;
 
     public String getAp() {
@@ -20,20 +18,6 @@ public class ScheduleEnvelope {
     }
     public void setMac(String mac) {
         this.mac = mac;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     public Schedule getSchedule() {
