@@ -2,16 +2,8 @@ package com.example.epaper.renderserver.model;
 
 public class ScheduleEnvelope {
 
-    private String ap;
     private String mac;
     private Schedule schedule;
-
-    public String getAp() {
-        return ap;
-    }
-    public void setAp(String ap) {
-        this.ap = ap;
-    }
 
     public String getMac() {
         return mac;

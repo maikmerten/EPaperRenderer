@@ -33,6 +33,9 @@ public class RenderServer {
         Authenticator auth = new TestAuthenticator();
         TagDb tagDb = new TagDb();
 
+        // TODO: This should be configurable
+        String apAddress = "192.168.1.10";
+
         AuthChecker authChecker = (HttpSession session) -> {
             return auth.checkSession(session);
         };
@@ -59,7 +62,7 @@ public class RenderServer {
             TagInfo taginfo = tagDb.getTagInfo(env.getMac());
             BufferedImage bimg = ScheduleRenderer.renderSchedule(env.getSchedule(), taginfo);
 
-            Uploader up = new Uploader(env.getAp());
+            Uploader up = new Uploader(apAddress);
             up.uploadImage(bimg, env.getMac(), false);
 
             return "ok";

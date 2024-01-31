@@ -27,7 +27,6 @@
         }
 
         let envelope = {
-            "ap": "192.168.1.10",
             "mac": "0000021E733A7430",
             "schedule": schedule
         }
@@ -112,10 +111,7 @@
         function updateEnvelope() {
             let sel = document.querySelector("#selTags");
             let mac = sel.value;
-            let info = tags[mac];
             envelope.mac = mac;
-            envelope.width = info.width;
-            envelope.height = info.height;
         }
 
         function renderTagList() {
